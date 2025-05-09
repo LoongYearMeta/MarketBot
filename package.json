@@ -1,0 +1,15 @@
+{
+  "name": "marketbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@types/node": "^22.10.1",
+    "tbc-contract": "^1.1.32"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
