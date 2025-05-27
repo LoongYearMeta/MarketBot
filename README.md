@@ -36,6 +36,8 @@ const REQUST_URL_SELL = "https://www.neww.site/v2/swapOne";
 ```
 
 ## 机器人使用
+- 环境：Node.js Version 22
+
 - 修改项目下config.json文件完成机器人配置
 
 - npm run build 编译项目

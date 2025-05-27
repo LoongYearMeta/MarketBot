@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node test.js"
+    "build": "tsc"
   },
   "dependencies": {
     "@types/node": "^22.10.1",
