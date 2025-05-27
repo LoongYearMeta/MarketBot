@@ -1,13 +1,20 @@
 import * as tbc from 'tbc-lib-js';
 import * as fs from 'fs';
-import * as global from "../config";
+import global from "./config";
 
 export function generateAddress() {
     let i = 0;
     while (i < global.KEYS_NUMBER) {
         const privateKey = tbc.PrivateKey.fromRandom();
-        fs.appendFileSync('./keys.txt', privateKey.toString() + '\n');
-        fs.appendFileSync('./address.txt', privateKey.toAddress().toString() + '\n');
+        if (fs.existsSync('./keys.txt') && fs.statSync('./keys.txt').size > 0) {
+            fs.appendFileSync('./keys.txt', '\n');
+        }
+        fs.appendFileSync('./keys.txt', privateKey.toString());
+
+        if (fs.existsSync('./address.txt') && fs.statSync('./address.txt').size > 0) {
+            fs.appendFileSync('./address.txt', '\n');
+        }
+        fs.appendFileSync('./address.txt', privateKey.toAddress().toString());
         i++;
     }
 }

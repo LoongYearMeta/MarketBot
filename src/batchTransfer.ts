@@ -1,7 +1,7 @@
 import * as tbc from 'tbc-lib-js';
 import { API } from 'tbc-contract'
 import { setAddressSatoshi, sendTBC } from "./sendTBC";
-import * as global from "../config";
+import global from "./config";
 import { getAddress } from './generateAddress';
 
 const network = global.NETWORK;

@@ -32,17 +32,20 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.batchTransferTBC = batchTransferTBC;
 const tbc = __importStar(require("tbc-lib-js"));
 const tbc_contract_1 = require("tbc-contract");
 const sendTBC_1 = require("./sendTBC");
-const global = __importStar(require("../config"));
+const config_1 = __importDefault(require("./config"));
 const generateAddress_1 = require("./generateAddress");
-const network = global.NETWORK;
-const privateKey_Supply = tbc.PrivateKey.fromWIF(global.PRIVATEKEY_SUPPLY);
-const address_Supply = global.ADDRESS_SUPPLY;
-const batchTransferTBCSatoshi = Math.ceil(global.DEFAULT_BATCHTRANSFER_TBC_AMOUNT * Math.pow(10, 6));
+const network = config_1.default.NETWORK;
+const privateKey_Supply = tbc.PrivateKey.fromWIF(config_1.default.PRIVATEKEY_SUPPLY);
+const address_Supply = config_1.default.ADDRESS_SUPPLY;
+const batchTransferTBCSatoshi = Math.ceil(config_1.default.DEFAULT_BATCHTRANSFER_TBC_AMOUNT * Math.pow(10, 6));
 // const privateKey_Supply = tbc.PrivateKey.fromWIF("L4QWNAoThNxQLhWarLWaXQksRTyATENuHEgfkUbANoiPEKA92Ywo");
 // const address_Supply = privateKey_Supply.toAddress().toString();//12Ex5VEWff744kUuHTj2Skwxjd93a3xHRc
 const addresses = (0, generateAddress_1.getAddress)();

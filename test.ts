@@ -6,29 +6,26 @@ import { sendFT } from "./src/sendFT";
 import { batchTransferTBC } from "./src/batchTransfer";
 import { ExtendedAPI } from "./src/monitorUTXO";
 import { buyFT, sellFT } from './src/buyAndSell';
-import * as global from "./config";
+import global from "./src/config";
 
-const network = global.NETWORK;
-const ftContractTxid = global.TOKEN_CONTRACTID;
-const address_Receive_TBC = global.ADDRESS_RECEIVE_TBC;
-const address_Receive_FT = global.ADDRESS_RECEIVE_FT;
-const address_Supply = global.ADDRESS_SUPPLY;
-const privateKey_Supply = tbc.PrivateKey.fromWIF(global.PRIVATEKEY_SUPPLY);
-const basicTransferTBCAmount = global.DEFAULT_TRANSFER_TOKEN_AMOUNT * Math.pow(10, 6);
-const basicTransferFTAmount = global.DEFAULT_TRANSFER_TOKEN_AMOUNT;
-
-const privateKeys = getPrivateKey();
-
-
-async function main() {
+export async function main() {
     try {
-        // await batchTransferTBC();
+        // buyFT
+        const buyLoop = async () => {
+            while (true) {
+                await batchTransferTBC();
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                await buyFT();
+            }
+        };
 
-        await Promise.all([buyFT(), sellFT()]);
+        // sellFT
+        const sellLoop = async () => {
+            await sellFT();
+        };
 
+        await Promise.all([buyLoop(), sellLoop()]);
     } catch (error) {
         console.error("Error in main function:", error);
     }
 }
-
-main();

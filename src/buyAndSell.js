@@ -32,6 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buyFT = buyFT;
 exports.sellFT = sellFT;
@@ -43,19 +46,19 @@ const sendFT_1 = require("./sendFT");
 const monitorUTXO_1 = require("./monitorUTXO");
 const requst_1 = require("./requst");
 const log_1 = require("./log");
-const global = __importStar(require("../config"));
-const network = global.NETWORK;
-const ftContractTxid = global.TOKEN_CONTRACTID;
-const address_Receive_TBC = global.ADDRESS_RECEIVE_TBC;
-const address_Receive_FT = global.ADDRESS_RECEIVE_FT;
-const address_Supply = global.ADDRESS_SUPPLY;
-const privateKey_Supply = tbc.PrivateKey.fromWIF(global.PRIVATEKEY_SUPPLY);
-const basicTransferTBCAmount = global.DEFAULT_TRANSFER_TBC_AMOUNT * Math.pow(10, 6);
-const basicTransferFTAmount = global.DEFAULT_TRANSFER_TOKEN_AMOUNT;
-const buyInterval = global.DEFAULT_BUY_INTERVAL;
-const sellInterval = global.DEFAULT_SELL_INTERVAL;
-const requstUrlBuy = global.REQUST_URL_BUY;
-const requstUrlSell = global.REQUST_URL_SELL;
+const config_1 = __importDefault(require("./config"));
+const network = config_1.default.NETWORK;
+const ftContractTxid = config_1.default.TOKEN_CONTRACTID;
+const address_Receive_TBC = config_1.default.ADDRESS_RECEIVE_TBC;
+const address_Receive_FT = config_1.default.ADDRESS_RECEIVE_FT;
+const address_Supply = config_1.default.ADDRESS_SUPPLY;
+const privateKey_Supply = tbc.PrivateKey.fromWIF(config_1.default.PRIVATEKEY_SUPPLY);
+const basicTransferTBCAmount = config_1.default.DEFAULT_TRANSFER_TBC_AMOUNT * Math.pow(10, 6);
+const basicTransferFTAmount = config_1.default.DEFAULT_TRANSFER_TOKEN_AMOUNT;
+const buyInterval = config_1.default.DEFAULT_BUY_INTERVAL;
+const sellInterval = config_1.default.DEFAULT_SELL_INTERVAL;
+const requstUrlBuy = config_1.default.REQUST_URL_BUY;
+const requstUrlSell = config_1.default.REQUST_URL_SELL;
 const privateKeys = (0, generateAddress_1.getPrivateKey)();
 async function buyFT() {
     const logFile = './logs/buy.log';
@@ -69,8 +72,16 @@ async function buyFT() {
             const sendTBCtx = (0, sendTBC_1.sendTBC)(privateKey, receiveAddressSatoshi, utxo);
             const txid = await tbc_contract_1.API.broadcastTXraw(sendTBCtx, network);
             (0, log_1.logToFile)(`txid: ${txid}`, logFile);
-            // const requstDataBuy = requstDataShell(txid, privateKey.toAddress().toString(), parseFloat(((basicTransferTBCAmount + randomAdjustment) / Math.pow(10, 6)).toFixed(6)));
-            const requstDataBuy = (0, requst_1.requstDataOnion)(txid, privateKey.toAddress().toString(), 0);
+            let requstDataBuy;
+            if (requstUrlBuy === "https://dev.shellswap.org/api/pool/buy") {
+                requstDataBuy = (0, requst_1.requstDataShell)(txid, privateKey.toAddress().toString(), parseFloat(((basicTransferTBCAmount + randomAdjustment) / Math.pow(10, 6)).toFixed(6)));
+            }
+            else if (requstUrlBuy === "https://www.neww.site/v2/swapOne") {
+                requstDataBuy = (0, requst_1.requstDataOnion)(txid, privateKey.toAddress().toString(), 0);
+            }
+            else {
+                throw new Error("Invalid requstUrlBuy");
+            }
             (0, log_1.logToFile)(`requstDataBuy: ${JSON.stringify(requstDataBuy)}`, logFile);
             const response = await (0, requst_1.postRequest)(requstUrlBuy, requstDataBuy);
             (0, log_1.logToFile)(`Http Requst response: ${JSON.stringify(response)}`, logFile);
@@ -104,8 +115,16 @@ async function sellFT() {
             const sendFTtx = await (0, sendFT_1.sendFT)(privateKey_Supply, address_Receive_FT, basicTransferFTAmount + randomAdjustment);
             const txid = await tbc_contract_1.API.broadcastTXraw(sendFTtx, network);
             (0, log_1.logToFile)(`txid: ${txid}`, logFile);
-            // const requstDataSell = requstDataShell(txid, privateKey_Supply.toAddress().toString(), basicTransferFTAmount + randomAdjustment);
-            const requstDataSell = (0, requst_1.requstDataOnion)(txid, privateKey_Supply.toAddress().toString(), 1);
+            let requstDataSell;
+            if (requstUrlSell === "https://dev.shellswap.org/api/pool/sell") {
+                requstDataSell = (0, requst_1.requstDataShell)(txid, privateKey_Supply.toAddress().toString(), basicTransferFTAmount + randomAdjustment);
+            }
+            else if (requstUrlSell === "https://www.neww.site/v2/swapOne") {
+                requstDataSell = (0, requst_1.requstDataOnion)(txid, privateKey_Supply.toAddress().toString(), 1);
+            }
+            else {
+                throw new Error("Invalid requstUrlSell");
+            }
             (0, log_1.logToFile)(`requstDataSell: ${JSON.stringify(requstDataSell)}`, logFile);
             const response = await (0, requst_1.postRequest)(requstUrlSell, requstDataSell);
             (0, log_1.logToFile)(`Http Requst response: ${JSON.stringify(response)}`, logFile);

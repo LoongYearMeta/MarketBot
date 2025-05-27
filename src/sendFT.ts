@@ -1,6 +1,6 @@
 import * as tbc from 'tbc-lib-js';
 import { API, FT } from 'tbc-contract'
-import * as global from "../config";
+import global from "./config";
 
 const network = global.NETWORK;
 const fee = global.DEFAULT_TRANSFER_FT_FEE;

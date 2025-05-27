@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as global from "../config";
+import global from "./config";
 export async function postRequest(url: string, data: object): Promise<any> {
     try {
         const response = await axios.post(url, data, {

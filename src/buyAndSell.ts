@@ -7,7 +7,7 @@ import { batchTransferTBC } from "./batchTransfer";
 import { ExtendedAPI } from "./monitorUTXO";
 import { postRequest, requstDataShell, requstDataOnion } from './requst';
 import { logToFile } from './log';
-import * as global from "../config";
+import global from "./config";
 
 const network = global.NETWORK;
 const ftContractTxid = global.TOKEN_CONTRACTID;
@@ -37,8 +37,14 @@ export async function buyFT() {
             const txid = await API.broadcastTXraw(sendTBCtx, network);
             logToFile(`txid: ${txid}`, logFile);
 
-            // const requstDataBuy = requstDataShell(txid, privateKey.toAddress().toString(), parseFloat(((basicTransferTBCAmount + randomAdjustment) / Math.pow(10, 6)).toFixed(6)));
-            const requstDataBuy = requstDataOnion(txid, privateKey.toAddress().toString(), 0);
+            let requstDataBuy;
+            if (requstUrlBuy === "https://dev.shellswap.org/api/pool/buy") {
+                requstDataBuy = requstDataShell(txid, privateKey.toAddress().toString(), parseFloat(((basicTransferTBCAmount + randomAdjustment) / Math.pow(10, 6)).toFixed(6)));
+            } else if (requstUrlBuy === "https://www.neww.site/v2/swapOne") {
+                requstDataBuy = requstDataOnion(txid, privateKey.toAddress().toString(), 0);
+            } else {
+                throw new Error("Invalid requstUrlBuy");
+            }
             logToFile(`requstDataBuy: ${JSON.stringify(requstDataBuy)}`, logFile);
             const response = await postRequest(requstUrlBuy, requstDataBuy);
             logToFile(`Http Requst response: ${JSON.stringify(response)}`, logFile);
@@ -73,9 +79,16 @@ export async function sellFT() {
             const sendFTtx = await sendFT(privateKey_Supply, address_Receive_FT, basicTransferFTAmount + randomAdjustment);
             const txid = await API.broadcastTXraw(sendFTtx, network);
             logToFile(`txid: ${txid}`, logFile);
-
-            // const requstDataSell = requstDataShell(txid, privateKey_Supply.toAddress().toString(), basicTransferFTAmount + randomAdjustment);
-            const requstDataSell = requstDataOnion(txid, privateKey_Supply.toAddress().toString(), 1);
+            
+            let requstDataSell;
+            if (requstUrlSell === "https://dev.shellswap.org/api/pool/sell") {
+                requstDataSell = requstDataShell(txid, privateKey_Supply.toAddress().toString(), basicTransferFTAmount + randomAdjustment);
+            } else if (requstUrlSell === "https://www.neww.site/v2/swapOne") {
+                requstDataSell = requstDataOnion(txid, privateKey_Supply.toAddress().toString(), 1);
+            } else {
+                throw new Error("Invalid requstUrlSell");
+            }
+            
             logToFile(`requstDataSell: ${JSON.stringify(requstDataSell)}`, logFile);
             const response = await postRequest(requstUrlSell, requstDataSell);
             logToFile(`Http Requst response: ${JSON.stringify(response)}`, logFile);

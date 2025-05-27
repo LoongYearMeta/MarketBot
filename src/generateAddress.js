@@ -32,19 +32,28 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateAddress = generateAddress;
 exports.getAddress = getAddress;
 exports.getPrivateKey = getPrivateKey;
 const tbc = __importStar(require("tbc-lib-js"));
 const fs = __importStar(require("fs"));
-const global = __importStar(require("../config"));
+const config_1 = __importDefault(require("./config"));
 function generateAddress() {
     let i = 0;
-    while (i < global.KEYS_NUMBER) {
+    while (i < config_1.default.KEYS_NUMBER) {
         const privateKey = tbc.PrivateKey.fromRandom();
-        fs.appendFileSync('./keys.txt', privateKey.toString() + '\n');
-        fs.appendFileSync('./address.txt', privateKey.toAddress().toString() + '\n');
+        if (fs.existsSync('./keys.txt') && fs.statSync('./keys.txt').size > 0) {
+            fs.appendFileSync('./keys.txt', '\n');
+        }
+        fs.appendFileSync('./keys.txt', privateKey.toString());
+        if (fs.existsSync('./address.txt') && fs.statSync('./address.txt').size > 0) {
+            fs.appendFileSync('./address.txt', '\n');
+        }
+        fs.appendFileSync('./address.txt', privateKey.toAddress().toString());
         i++;
     }
 }
